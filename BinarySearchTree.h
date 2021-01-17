@@ -1,7 +1,5 @@
-
 #ifndef BinarySearchTree_h
 #define BinarySearchTree_h
-
 
 #include <iostream>
 #include <memory>
@@ -82,6 +80,32 @@ class BinarySearchTree: public Tree<T>{
             return true;
         }
 
+        void remove_help(const T &data, std::unique_ptr<Node> &checked_node){
+            if(checked_node->left){
+                if (checked_node->left->m_data == data){
+                    remove_node(checked_node, checked_node->left);
+                }
+            }
+
+            if(checked_node->right){        
+                if (checked_node->right->m_data == data){
+                    remove_node(checked_node, checked_node->right);
+                }
+            }
+
+            if (checked_node->m_data > data){
+                remove_help(data, checked_node->left);
+            }
+
+            if (checked_node->m_data < data){
+                remove_help(data, checked_node->right);
+            }     
+        }
+
+        void remove_node(std::unique_ptr<Node> &parent_node, std::unique_ptr<Node> &delete_node){
+                std::cout<<"Value of parent = "<<parent_node->m_data<<std::endl;
+                std::cout<<"Value to remove = "<<delete_node->m_data<<std::endl;
+        }
     public:
         BinarySearchTree(T data):Tree<T>(){
             root= std::make_unique<Node> (Node(data));
@@ -100,7 +124,38 @@ class BinarySearchTree: public Tree<T>{
         }
 
         virtual void remove (const T &data){
+            if (!root){
+                std::cout<<"root not exist"<<std::endl;
+            }
 
+            if(root->m_data == data){
+                std::cout<<"remove root not ready"<<std::endl;
+                if (root->left) {
+                    std::cout<<"value before root"<<getMaxValue_help(root->left)<<std::endl;
+                }
+
+                if (root->right) {
+                    std::cout<<"value after root"<<getMinValue_help(root->right)<<std::endl;
+                }
+                std::cout<<"remove root not ready"<<std::endl;
+                    //remove_node(root, root->left);
+            }
+
+            if((root->m_data > data) && (root->left)){
+                if (root->left->m_data == data) {
+                    remove_node(root, root->left);
+                } else {
+                    remove_help(data, root->left);
+                }
+            }
+
+            if((root->m_data < data) && (root->right)){
+                if (root->right->m_data == data) {
+                    remove_node(root, root->right);
+                } else {
+                    remove_help(data, root->right);
+                }
+            }
         };
 
         virtual const T& getMaxValue () const{
@@ -126,8 +181,7 @@ class BinarySearchTree: public Tree<T>{
 
             return find_help(data, root);
         }
-
 };
 
 
-#endif // BinarySearchTree_h
+#endif //BinarySearchTree_h
